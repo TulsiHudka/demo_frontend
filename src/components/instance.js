@@ -1,25 +1,35 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3000'); // Replace with your server URL
-const SocketConnectiom = () => {
-    useEffect(() => {
+const socket = io('http://localhost:8000');
 
+const SocketConnection = () => {
+    const [response, setResponse] = useState('');
+    useEffect(() => {
         socket.on('connect', () => {
             console.log('Connected to WebSocket');
         });
-
-        socket.on('notification', (data) => {
-            console.log('Received notification:', data);
-            // Handle the received notification here
-        });
-
-        return () => {
-            socket.disconnect(); // Clean up the socket connection
-        };
+        // return () => {
+        //     socket.disconnect(); // Clean up the socket connection
+        // };
     }, []);
 
-    // Rest of your component code
+    const handleButtonClick = () => {
+        socket.emit('apiRequest', {}, (responseData) => {
+            alert(responseData);
+        });
+        socket.on('response', (data) => {
+            console.log(data);
+            setResponse(data);
+        });
+    };
+    return (
+        <div>
+            <h1>Web Socket API Example</h1>
+            <button onClick={handleButtonClick}>Send API Request</button>
+            <p> Response: {response}</p>
+        </div>
+    );
 };
 
-export default SocketConnectiom;
+export default SocketConnection;

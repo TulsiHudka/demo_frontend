@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:8000'); // Assuming WebSocket server is running on localhost:3001
+const socket = io('http://localhost:8000');
 
 const Users = () => {
     const [users, setUsers] = useState([]);
@@ -10,31 +10,23 @@ const Users = () => {
     const [email, setEmail] = useState('');
 
     useEffect(() => {
-        // Fetch initial users data
         fetchUsers();
-
-        // Subscribe to real-time updates via WebSocket
-        socket.on('usersUpdated', fetchUsers);
-
-        // Clean up the subscription when component unmounts
-        return () => {
-            socket.off('usersUpdated');
-        };
     }, []);
 
     const fetchUsers = async () => {
         try {
             const response = await fetch('http://localhost:8000/api/getusers');
+            console.log(response);
             const data = await response.json();
             setUsers(data);
         } catch (error) {
-            // console.error('Error fetching users:', error);
+            console.error('Error fetching users:', error);
         }
     };
 
     const createUser = async () => {
         try {
-            const response = await fetch('http://localhost:8000/api/users', {
+            const response = await fetch('http://localhost:8000/api/createusers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email })
@@ -54,10 +46,9 @@ const Users = () => {
             console.log(id);
             const response = await fetch(`http://localhost:8000/api/users/${id}`, { method: 'DELETE' });
             console.log(response);
-            // if (response.ok) {
-            //     // User deleted successfully, update the list
-            //     fetchUsers();
-            // }
+            if (response.ok) {
+                fetchUsers();
+            }
         } catch (error) {
             console.error('Error deleting user:', error);
         }
