@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:8000');
@@ -23,11 +24,24 @@ const SocketConnection = () => {
             setResponse(data);
         });
     };
+
+    const apiCallHandler = () => {
+        axios.get('http://192.168.2.79:8999/users')
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }
+
     return (
         <div>
             <h1>Web Socket API Example</h1>
             <button onClick={handleButtonClick}>Send API Request</button>
             <p> Response: {response}</p>
+            <button onClick={apiCallHandler}>fetchUser</button>
+
         </div>
     );
 };
